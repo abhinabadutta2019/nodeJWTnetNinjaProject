@@ -15,18 +15,49 @@
 
 <script>
   const form = document.querySelector("form");
+  const emailError = document.querySelector(".email.error");
+  const passwordError = document.querySelector(".password.error"); //  <div class="password error"></div> -- on line 12
 
   //
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    // reset errors
+    //resetting the value of line 47,48 -- jate -- new error k catch korte pare , and update error
+    emailError.textContent = "";
+    passwordError.textContent = "";
 
     //get the values
     //form.email-->>-eta 'name' field nicche--etar sathe object er kono conncection nei
     //form.email.value--> -eta theke - value asche
     const email = form.email.value;
     const password = form.password.value;
+    // console.log(email, password);
+    try {
+      const res = await fetch("/signup", {
+        method: "POST",
+        body: JSON.stringify({ email: email, password: password }), //coming from line 27,28
+        headers: { "Content-type": "application/json" },
+      });
+      //
+      const data = await res.json();
 
-    console.log(email, password);
+      console.log(data); //to check in console.log()
+
+      //checking errors
+      //data.errors--coming from authRoutes page
+      if (data.errors) {
+        emailError.textContent = data.errors.email;
+        passwordError.textContent = data.errors.password;
+      }
+      //if SUCCES then REDIRECT to homepage
+      //data.user--coming from authRoutes page
+      if (data.user) {
+        location.assign("/");
+      }
+    } catch (err) {
+      console.log(err);
+    }
   });
 </script>
 <!--  -->
