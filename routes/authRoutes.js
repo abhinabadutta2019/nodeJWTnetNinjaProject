@@ -8,6 +8,15 @@ const handleErrors = (err) => {
   console.log(err.message, err.code);
   let errors = { email: "", password: "" };
 
+  //incorrect email( login route)
+  if (err.message === "incorrect email") {
+    errors.email = "that email is not registered";
+  }
+
+  //incorrect password( login route)
+  if (err.message === "incorrect password") {
+    errors.password = "that password is incorrect";
+  }
   //duplicate error code
   if (err.code === 11000) {
     errors.email = "this email is already registered";
@@ -35,6 +44,7 @@ router.get("/signup", (req, res) => {
 router.get("/login", (req, res) => {
   res.render("login.ejs");
 });
+
 //post signup
 router.post("/signup", async (req, res) => {
   try {
@@ -55,12 +65,21 @@ router.post("/signup", async (req, res) => {
   }
 });
 //
-router.post("/login", (req, res) => {
+router.post("/login", async (req, res) => {
   try {
-    console.log(req.body.email, req.body.password);
-  } catch (err) {}
-
-  res.send("user login1");
+    //User.login() method created on -  User model file - line 42
+    const user = await User.login(req.body.email, req.body.password);
+    //jwt
+    const token = createToken(user._id); //createToken() function called here--created on line 25--using --jwt.sign() method
+    //cookie
+    res.cookie("jwt", token); //jwt is the name of the cookie
+    res.status(200).json({ user: user._id });
+  } catch (err) {
+    const errors = handleErrors(err);
+    res.status(400).json({ errors });
+    //sening a blank object if error
+    // res.status(400).json({});
+  }
 });
 
 //
