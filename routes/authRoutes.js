@@ -45,6 +45,7 @@ router.get("/login", (req, res) => {
   res.render("login.ejs");
 });
 
+//
 //post signup
 router.post("/signup", async (req, res) => {
   try {
