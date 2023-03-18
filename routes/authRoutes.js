@@ -45,7 +45,6 @@ router.get("/login", (req, res) => {
   res.render("login.ejs");
 });
 
-//
 //post signup
 router.post("/signup", async (req, res) => {
   try {
@@ -81,6 +80,13 @@ router.post("/login", async (req, res) => {
     //sening a blank object if error
     // res.status(400).json({});
   }
+});
+
+//logout
+router.get("/logout", async (req, res) => {
+  //resetting the value of token to '' empty string
+  res.cookie("jwt", "", { maxAge: 1 }); //maxAge of the value is 1 mili second
+  res.redirect("/");
 });
 
 //
